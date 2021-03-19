@@ -96,6 +96,13 @@
 ;(set-default-font "-outline-APL385 Unicode-normal-normal-normal-mono-15-*-*-*-c-*-iso8859-1") ; ex 20210307
 ;(set-default-font "Hack-12") ; ex 20210307
 (set-cursor-color "green")
+(set-face-attribute 'default nil :font "Consolas-10")
+(set-face-attribute 'default nil :font "Hack-11")
+(set-frame-font "Consolas-10" nil t)
+(set-frame-font "Hack-11" nil t)
+(set-face-attribute 'default nil :height 160)
+(set-frame-size (selected-frame) 96 28)
+(set-frame-position (selected-frame) 50 10)
 
 ;  set up move 4-spaces command to assign tab to:
 (fset 'move-4-spaces
@@ -935,7 +942,5 @@ auto-mode-alist (append (list '("\\.c$" . c-mode)
 
 (fset 'rm-misc-company-etc-info
    [?\C-s ?C ?o ?m ?p ?a ?n ?y ?  ?N ?a ?m ?e ?\C-f ?\C-b return ?\C-p ?\C-k ?\C-k ?\C-s ?C ?o ?m ?p ?a ?n ?y ?  ?L ?o ?c ?a ?t ?i ?o ?n ?\C-f return ?\C-p ?\C-s ?\C-s ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-k ?\C-n ?\C-a ?\C-s ?P ?o ?s ?t ?e ?d ?  ?D ?a ?t ?e ?\C-b ?\C-f return ?\C-p ?\C-k ?\C-k ?\C-s ?N ?u ?m ?b ?e ?r ?  ?o ?f ?  ?v ?i ?e ?w ?s ?\C-b ?\C-f return ?\C-p ?\C-s ?\C-s ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-k])
-(set-frame-size (selected-frame) 120 58)
-(set-frame-position (selected-frame) 140 10)
    
 (desktop-save-mode 1)
