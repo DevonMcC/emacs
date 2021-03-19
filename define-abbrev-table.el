@@ -97,7 +97,13 @@
     ("1/2" "½")    ; Unicode 00BD
     ("1/3" "⅓")    ; Unicode 2153
     ("1/4" "¼")    ; Unicode 00BC
-    ("1/5" "⅕")    ; Unicode 2155
+    ("1/5" "⅕")    ; Unicode 2155                       
+    ("cents" "¢" nil 0)       ; Unicode 00A2
+    ("dollars" "$" nil 0)     ; Unicode 0024
+    ("euro" "€" nil 0)        ; Unicode 20AC
+    ("GBP" "£" nil 0)         ; Unicode 00A3
+    ("ruble" "₽" nil 0)  ; Unicode 20BD
+    ("yen" "¥" nil 0)    ; Unicode 00A5
     ))
 ;
 (abbrev-mode 1) ; turn on abbrev mode
