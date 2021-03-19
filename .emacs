@@ -1,18 +1,11 @@
 ; Devon's GNU Emacs initialization file - now Win-oriented
 ;though traces of its Unix and ksh heritages remain.
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-(package-initialize)
-
 (setq base-disk (getenv "BASEDSK"))
 (if (eq base-disk nil) (setq base-disk "C:"))
-(setq aux-disk (getenv "AUXDSK"))
-(if (eq base-disk nil) (setq aux-disk "C:"))
-;(setq pgm-dir-home "D:\\Program Files (x86)\\")
-(setq pgm-dir-home (concat base-disk "\\Program Files (x86)\\"))
+(if (eq aux-disk nil) (setq aux-disk "D:"))
+(setq EmacsBase (concat base-disk "/Pgm/Emacs/x86_64/"))
+(setq pgm-dir-home EmacsBase)
 (setq eshell-prompt-function
     (lambda nil
         (concat (concat (format-time-string "%Y-%m-%d %a %H:%M:%S.%3N %z" (current-time)))
@@ -23,6 +16,25 @@
   "A regexp which fully matches your eshell prompt."
   :type 'regexp
   :group 'eshell-prompt)
+
+(setq load-path (cons (concat EmacsBase "addons") load-path))
+(setq load-path (cons (concat EmacsBase "addons/ess-18.10.2/lisp") load-path))
+(add-to-list 'load-path (concat pgm-dir-home "Emacs\\site-lisp\\"))
+
+(load "define-error.el")
+(load "file-name-base.el")
+(load "image-dired.el")
+(load "dired-external-apps.el")
+;(load "graphviz-dot-mode.el")    ; ex-20200517
+
+(require 'tramp)
+(require 'ido) ;For emacs 22 and above...
+
+(fset 'cvt-spreadsheet-mat-to-J
+   [escape ?r ?\C-q tab return ?  return ?\C-x ?[ escape ?r ?\C-q ?\C-j return ?, return ?\C-b ?\C-d ?\C-r ?, ?\C-b ?\C-f ?\C-f ?: ?\C-x ?[])
+
+; Show column number where cursor is.
+(column-number-mode 1)
 
 ;  High-contrast, light foreground screen colors:
 ;(set-foreground-color "yellow")
@@ -46,41 +58,15 @@
 (set-background-color "black")
 (set-foreground-color "gold")
 
-(set-default-font "Hack-11")
-(set-cursor-color "green")
-(set-face-attribute 'default nil :height 120)
-
-(setq load-path (cons (concat "~/addons") load-path)) ; 20200523
-;(setq load-path (cons (concat "~/elisp/auctex") load-path)) ; ex-20200523
-;(setq load-path (cons (concat "~/site-lisp") load-path))    ; ex-20200523
-;(setq load-path (cons (concat "~/lisp") load-path))         ; ex-20200523
-;(setq load-path (cons (concat "~/lisp/net") load-path))     ; ex-20200523
-;(add-to-list 'load-path (concat pgm-dir-home "Emacs\\site-lisp\\")) ; ex-20200523
-
-;(load "define-error.el")
-;(load "file-name-base.el")
-;(load "image-dired.el")          ; ex-20200523
-;(load "dired-external-apps.el")  ; ex-20200517
-;(load "graphviz-dot-mode.el")    ; ex-20200517
-
-(require 'tramp)
-;(load (concat pgm-dir-home "Emacs/site-lisp/tramp.el"))
-(require 'ido) ;For emacs 22 and above...
-
-(fset 'cvt-spreadsheet-mat-to-J
-   [escape ?r ?\C-q tab return ?  return ?\C-x ?[ escape ?r ?\C-q ?\C-j return ?, return ?\C-b ?\C-d ?\C-r ?, ?\C-b ?\C-f ?\C-f ?: ?\C-x ?[])
-
-; Show column number where cursor is.
-(column-number-mode 1)
-
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
-(prefer-coding-system 'utf-8)
 
 ; word-wrap64: set lines to wrap to keep text within 64 columns and turn
-; on the mode to accomplish the wrap.
+; on the mode to accomplish the wrap; assign to f2 key.
 (fset 'word-wrap64
    [?\C-[ ?6 ?4 ?\C-[ ?x ?s ?e ?t ?- ?f ?i ?l ?l ?- ?c ?o ?l ?u ?m ?n return ?\C-[ ?x ?a ?u ?t ?o ?- ?f ?i ?l ?l ?- ?m ?o ?d ?e return])
+; Usual J expression to convert tab-delimited fields in LF-delimited lines to mat.
+(global-set-key [f2] "<;._1&>TAB,&.><;._2 ] LF (] , [ #~ [ ~: [: {: ]) CR-.~")
 
 ;  The following statements make APL (high-bit) chars displayable:
 (standard-display-8bit 14 255)
@@ -103,11 +89,13 @@
 (add-to-list 'default-frame-alist
              '(font . "DejaVu Sans Mono-10"))
 
-(set-default-font "Consolas-12")
-;(set-default-font "-outline-APL Help-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1")
-;(set-default-font "-outline-APL385 Unicode-normal-normal-normal-mono-*-*-*-*-c-*-iso10646-1")
-;(set-default-font "-outline-APL385 Unicode-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1")
-;(set-default-font "-outline-APL385 Unicode-normal-normal-normal-mono-16-*-*-*-c-*-iso8859-1")
+;(set-default-font "Consolas-12") ; ex 20210307
+;(set-default-font "-outline-APL Help-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1") ; ex 20210307
+;(set-default-font "-outline-APL385 Unicode-normal-normal-normal-mono-*-*-*-*-c-*-iso10646-1") ; ex 20210307
+;(set-default-font "-outline-APL385 Unicode-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1") ; ex 20210307
+;(set-default-font "-outline-APL385 Unicode-normal-normal-normal-mono-15-*-*-*-c-*-iso8859-1") ; ex 20210307
+;(set-default-font "Hack-12") ; ex 20210307
+(set-cursor-color "green")
 
 ;  set up move 4-spaces command to assign tab to:
 (fset 'move-4-spaces
@@ -170,13 +158,10 @@
     "Open BASH session."
     (interactive)
     (setq save-old explicit-shell-file-name)
-;    (setq explicit-shell-file-name (concat base-disk "\\utl\\cygwin64\\bin\\bash.exe"))
-;    (setq explicit-shell-file-name (concat base-disk "/Program Files (x86)/Git/bin/bash.exe"))
-    (setq explicit-shell-file-name (concat base-disk "/Pgm/bash.exe"))
-    (setq shell-file-name "Bash")
+    (setq explicit-shell-file-name (concat base-disk "\\utl\\cygwin64\\bin\\bash.exe"))
+    (setq explicit-shell-file-name (concat base-disk "/Program Files (x86)/Git/bin/bash.exe"))
+    (setq shell-file-name "BASH")
     (shell)
-;    (insert "export PS1=\"[\u|\h|\t|\w]\n\r$")
-    (comint-send-input)
     (setq explicit-shell-file-name save-old)
 )
 (define-key global-map "\C-c\C-b" 'start-BASH-session)
@@ -192,6 +177,17 @@
     (setq explicit-shell-file-name save-old)
 )
 (define-key global-map "\C-cC" 'start-Cygwin-terminal-session)
+
+(defun start-DCS532-session ()
+    "Run DCS for Clarifi v.5.3.2."
+    (interactive)
+    (setq save-old explicit-shell-file-name)
+    (setq explicit-shell-file-name "C:/Clarifi532/DCS/DataCacheServer.exe")
+    (setq shell-file-name "DCS 5.3.2")
+    (shell)
+    (setq explicit-shell-file-name save-old)
+)
+(define-key global-map "\C-cD" 'start-DCS532-session)
 
 (defun start-Ermine-session ()
     "Open Ermine session."
@@ -243,57 +239,57 @@
 )
 (define-key global-map "\C-c\C-h" 'start-Haskell-session)
 
-(defun start-iPython-session ()
-    "Open iPython session."
-    (interactive)
-    (setq save-oldesfn explicit-shell-file-name)
-    (setq explicit-shell-file-name (concat base-disk "/pgm/Python37-64/Scripts/ipython.exe")) ; To run Python
-    (setq shell-file-name "iPython37-64")
-    (shell)
-    (setq runlst (concat aux-disk "/amisc/Ainfo/code/Python/.startup.py"))
-    (setq runlst2 (concat "exec(compile(open('" runlst "','rb').read(), '" runlst "', 'exec'))"))
-    (insert runlst2)
-    (insert "import os''\n")
-    (comint-send-input)
-    (setq explicit-shell-file-name save-oldesfn)
-)
-(define-key global-map "\C-cI" 'start-iPython-session)
-
 (defun start-J-session ()
     "Open J jconsole session."
     (interactive)
     (setq save-old explicit-shell-file-name)
     (setq explicit-shell-file-name (concat base-disk "/utl/JPll.bat"))
-    (setq explicit-shell-file-name (concat base-disk "/utl/J64-804.bat"))
-    (setq shell-file-name "J804_64")
     (setq explicit-shell-file-name (concat base-disk "/utl/J64-902.bat"))
-    (setq shell-file-name "J902_64")
-    (setq comint-process-echoes t)
-    (defvar j-prompt-regexp "   "
-        "Prompt for `run-q'.")
-    (setq comint-use-prompt-regexp t)
+    (setq shell-file-name "J9.02_64")
+;    (setq explicit-shell-file-name (concat base-disk "/utl/J902Combo.bat"))
+;    (setq shell-file-name "J9.02_64Combo")
+;    (setq explicit-shell-file-name (concat base-disk "/Pgm/J902/jconsole.cmd"))
+;    (setq shell-file-name "J9.02_64CmdBin")
     (shell)
     (insert "qts''\n")
     (insert "JVERSION\n")
+    (insert "load 'Omaha.ijs'")
     (comint-send-input)
     (setq explicit-shell-file-name save-old)
 )
-;(define-key global-map "\C-c\C-j" (comint-run "C:/utl/J64-804.bat"))
 (define-key global-map "\C-c\C-j" 'start-J-session)
 
-(defun start-J9-session ()
-    "Open J 9.02 jconsole session."
+(defun start-J903-session ()
+    "Open J 9.03 jconsole session."
     (interactive)
     (setq save-old-shell-file-name explicit-shell-file-name)
-    (setq explicit-shell-file-name (concat base-disk "/utl/J64-902.bat"))
-    (setq shell-file-name "J902_64")
+    (setq explicit-shell-file-name (concat base-disk "/utl/J64-903.bat"))
+    (setq shell-file-name "J9.03_64")
     (shell)
     (insert "qts''\n")
     (insert "JVERSION\n")
     (comint-send-input)
     (setq explicit-shell-file-name save-old-shell-file-name)
 )
-(define-key global-map "\C-c\C-i" 'start-J9-session)
+(define-key global-map "\C-c\C-i" 'start-J903-session)
+
+(defun start-J903-session ()
+    "Open J 9.03 jconsole session."
+    (interactive)
+    (setq save-old-shell-file-name explicit-shell-file-name)
+    (setq explicit-shell-file-name (concat base-disk "/utl/J64-903.bat"))
+    (setq shell-file-name "J903_64")
+    (shell)
+    (insert "qts''\n")
+    (insert "JVERSION\n")
+    (insert "load 'ide/qt/qtlib'\n")
+    (insert "read_image=: readimg_jqtide_\n")
+    (insert "write_image=: writeimg_jqtide_\n")
+    (insert "NB. $read_image 'Bikesgray (1).jpg'\n")
+    (comint-send-input)
+    (setq explicit-shell-file-name save-old-shell-file-name)
+)
+(define-key global-map "\C-c\C-h" 'start-J903-session)
 
 (defun start-J9plain-session ()
     "Open J 9.01 jconsole session."
@@ -322,50 +318,45 @@
 
 ;(load "JShell.el") ; Finally works! 20141028
 
-(defun start-mingw64-session ()  ; Does not work: spins off window outside emacs
-    "Open MSYS2 console session."
-    (interactive)
-    (setq save-old-shell-file-name explicit-shell-file-name)
-    (setq explicit-shell-file-name (concat base-disk "/Pgm/msys64/mingw64.exe --login -i"))
-    (setq shell-file-name "MinGW64")
-    (shell)
-    (setq explicit-shell-file-name save-old-shell-file-name)
-)
-(define-key global-map "\C-c\C-m" 'start-mingw64-session) ; Same as Matlab invocation
-
-(defun start-Powershell-session ()
-    "Open Powershell session."
-    (interactive)
-    (setq save-oldesfn explicit-shell-file-name)
-    (setq explicit-shell-file-name (concat base-disk "/Utl/MyCmd.bat")) ; Run DOS command shell
-    (setq shell-file-name "Powershell")
-    (shell)
-    (insert (concat base-disk "\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoLogo -InputFormat Text\n"))
-    (comint-send-input)
-    (setq explicit-shell-file-name save-oldesfn)
-)
-(define-key global-map "\C-c\C-P" 'start-Powershell-session)
-
 (defun start-Python-session ()
     "Open Python session."
     (interactive)
     (setq save-oldesfn explicit-shell-file-name)
-;    (setq explicit-shell-file-name (concat base-disk "/pgm/Python37-64/python.exe")) ; To run Python
-    (setq explicit-shell-file-name (concat base-disk "/pgm/Python39/python.exe")) ; To run Python
-    (setq shell-file-name "Python3.90")
-;  (setq shell-file-name "Python37-64")
+;    (setq explicit-shell-file-name (concat base-disk "/pgm/IronPython 2.7/ipy.exe")) ; To run Python
+;    (setq explicit-shell-file-name (concat base-disk "/pgm/Python27/python.exe")) ; To run Python
+    (setq explicit-shell-file-name (concat base-disk "/pgm/Python37-64/python.exe")) ; To run Python
+    (setq shell-file-name "Python37-64")
     (shell)
-    (setq runlst (concat aux-disk "/amisc/Ainfo/code/Python/.startup.py"))
+    (setq runlst (concat base-disk "/amisc/Ainfo/code/Python/.startup.py"))
     (setq runlst2 (concat "exec(compile(open('" runlst "','rb').read(), '" runlst "', 'exec'))"))
+
+;    (insert (concat "exec(compile(open('" base-disk "/amisc/Ainfo/code/Python/.startup.py','rb').read(), '" base-disk "/amisc/Ainfo/code/Python/.startup.py', 'exec'))"))
     (insert runlst2)
     (comint-send-input)
     (setq explicit-shell-file-name save-oldesfn)
 )
+    ;    (setq run1st (concat "execfile(\"" base-disk "/amisc/Ainfo/code/Python/startup.py\")")) ; v. 2
+    ;    (setq run1st "flnm=\"/amisc/Ainfo/code/Python/.startup.py\"\n")  ; v. 3
+    ;    (setq runlst (concat runlst "exec(compile(open(\"/amisc/Ainfo/code/Python/.startup.py\",'\"rb'\").read(), \"/amisc/Ainfo/code/Python/.startup.py\", 'exec'))")) ; v. 3
 
 (setq py-jython-command "/pgm/IronPython 2.7/ipy.exe")
 (define-key global-map "\C-cP" 'start-Python-session)
 (when (executable-find "ipython")
   (setq python-shell-interpreter "ipython"))
+
+(defun start-Python3-session ()
+   "Open Python session."
+   (interactive)
+   (setq save-oldesfn explicit-shell-file-name)
+   (setq explicit-shell-file-name (concat base-disk "/pgm/Python35-32/python.exe")) ; To run Python 3.5
+   (setq shell-file-name "Python 3.7-64")
+   (setq explicit-shell-file-name (concat base-disk "/pgm/Python37-64/python.exe")) ; To run Python 3.7
+   (shell)
+   (insert "exec(open(\"/amisc/Ainfo/code/Python/.startup.py\").read())") ; Python 3
+   (comint-send-input)
+   (setq explicit-shell-file-name save-oldesfn)
+)
+(define-key global-map "\C-c3" 'start-Python3-session)
 
 (defun start-Matlab-session ()
     "Open Matlab session."
@@ -399,11 +390,10 @@
                 (font-lock-mode 1))))
 (load "octave.el")
 
-;(autoload 'q-mode "q-mode")
-;(add-to-list 'auto-mode-alist '("\\.[kq]\\'" . q-mode))
+(autoload 'q-mode "q-mode")
+(add-to-list 'auto-mode-alist '("\\.[kq]\\'" . q-mode))
 (defun start-q-session ()
-    "Open q jconsole session."
-;    (load "q-mode.el")
+    "Open q console session."
     (interactive)
     (setq save-old explicit-shell-file-name)
 ;    (setq explicit-shell-file-name (concat base-disk "/q/w32/q.exe"))
@@ -414,9 +404,8 @@
     (setq comint-process-echoes t)
     (setq comint-use-prompt-regexp t)
     (shell)
-;    (load "q-mode.el")
     (insert "\"K-version: \",string .Q.k\n")
-;    (insert "qts()\n")
+    (insert "now\n")
     (comint-send-input)
     (setq explicit-shell-file-name save-old)
 )
@@ -426,8 +415,10 @@
     "Open R console session."
     (interactive)
     (setq save-old explicit-shell-file-name)
+    (setq explicit-shell-file-name (concat base-disk "/utl/R-2.12.2.bat"))
+    (setq shell-file-name "R-2.12.2")
     (setq explicit-shell-file-name (concat base-disk "/utl/R.bat"))
-    (setq shell-file-name "R-4.0.0")
+    (setq shell-file-name "R-3.2.2")
 ;    (ess-toggle-underscore nil) ; Turn off "_"->"->" in R-mode
     (shell)
     (setq explicit-shell-file-name save-old)
@@ -435,31 +426,6 @@
 (define-key global-map "\C-cR" 'start-R-session)
 ; (make-comint-in-buffer "R-3.2.4 Revised" "R-3.2.4Revised160822.log" "C:/Utl/R-3.2.4Revised.bat")
 ; (comint-run "C:/Utl/R-3.2.4Revised.bat")
-(defun start-R322-session ()
-    "Open R v. 3.2.2 console session."
-    (interactive)
-    (setq save-old explicit-shell-file-name)
-    (setq explicit-shell-file-name (concat base-disk "/utl/R322.bat"))
-    (setq shell-file-name "R-3.2.2")
-;    (ess-toggle-underscore nil) ; Turn off "_"->"->" in R-mode
-    (shell)
-    (setq explicit-shell-file-name save-old)
-)
-(define-key global-map "\C-cQ" 'start-R322-session)
-
-(defun start-Ubuntu-session ()
-    "Ubuntu"
-    (interactive)
-    (setq save-old explicit-shell-file-name)
-; (setq explicit-shell-file-name (concat base-disk "/Users/devon/AppData/Local/Microsoft/WindowsApps/ubuntu2004.exe /usr/bin/bash"))
-    (setq explicit-shell-file-name (concat base-disk "/Utl/Ubuntu.bat"))
-    (setq shell-file-name "Ubuntu")
-;    (insert "export PS1=\"[\\u | \\h | \\t | \\w ]\\n\\r$\"\n")
-    (comint-send-input)
-    (shell)
-    (setq explicit-shell-file-name save-old)
-)
-(define-key global-map "\C-cU" 'start-Ubuntu-session)
 
 (defun VS-session ()
     "Run MS Visual Studio from command prompt"
@@ -505,14 +471,12 @@
 (define-key global-map "\C-z" 'help-for-help)
 ;Redefine backspace to be Delete
 (define-key global-map "\C-h" 'delete-backward-char)
-;Redefine Meta-R to be replace regular expression
-; (global-set-key [M-S-R] 'replace-regexp)
 ;Redefine Meta-r to be replace string
 (global-set-key [M-r] 'replace-string)
 (global-set-key [?\M-r] 'replace-string)
 (define-key global-map "\er" 'replace-string)
 ;(global-set-key (kbd "<f9> a") "α")
-;(load "define-abbrev-table.el")
+(load "define-abbrev-table.el")
 (abbrev-mode 1) ; turn on abbrev mode
 
 ;The following 2 cause too many problems because of confusion with their
@@ -549,6 +513,17 @@
  (t (message "Could not find matching paren.")))))
 
 (define-key global-map "\C-c\C-x"'c++-match-paren)
+
+(global-set-key [f12] 'shell) ;; Command shell
+(global-set-key [f14] 'undo);; Undo
+(global-set-key [f15] 'delete-other-windows);; Front
+(global-set-key [f17] 'find-file) ;; Open
+(global-set-key [f19] 'isearch-forward) ;; Find
+(global-set-key [S-f19] 'query-replace) ;; Shift Find
+(global-set-key [C-f19] 'goto-line) ;; Control Find
+(global-set-key [f22] 'lpr-buffer);; Print Screen
+(global-set-key [S-f22] 'lpr-region);; Shift Print Screen
+(global-set-key [f23] 'scroll-bar-mode) ;; Scroll Lock
 
 (fset 'rm-blank-lines
    [?\M-x ?f ?l ?u ?s ?h ?- ?l ?i ?n ?e ?s return ?^ ?\\ ?s ?- ?* ?$ return])
@@ -673,7 +648,7 @@
 ;(setq explicit-shell-file-name "C:/utl/cygwin64/cygwin.bat")
 
 (setq exec-path (cons exec-path (concat base-disk "/utl/cygwin64/bin")))
-;(setenv "PATH" (concat (getenv "PATH") ";" base-disk ";\\utl\\cygwin64\\bin")) ; ex-20200517
+(setenv "PATH" (concat (getenv "PATH") ";" base-disk ";\\utl\\cygwin64\\bin"))
 (setenv (concat (concat base-disk "\\utl\\gnuwin32\\bin;") (getenv "PATH")))
 ;(setenv "PATH" (concat "C:\\Program Files (x86)\\Emacs\\EmacsW32\\gnuwin32\\bin;" (getenv "PATH")))
 
@@ -728,12 +703,12 @@
 (fset 'convert-kbd-macro-to-fset-form
  "\C-a\C-[r LFD \C-q\C-j\C-x[\C-[r\C-x[\C-[r\C-x[\C-[r\C-[\C-x[\C-x[\C-[r RET \C-q\C-j")
 
-; J expression to turn debugging off then on.
+; Put a standard text-separator in register "l" to avoid typing it.
+(set-register ?l "\n\t\t+.-----------------+.\n")
+; Put common string I use in J to turn debugging off then on.
 (set-register ?d "dbr 1 [ dbr 0")
-; J code to turn vector of text vectors into LF-terminated strings.
-(set-register ?l ";LF,~&.>")
-; J expression to convert tab-delimited fields in LF-delimited lines to mat.
-(global-set-key [f2] "<;._1&>TAB,&.><;._2 ] LF (] , [ #~ [ ~: [: {: ]) CR-.~")
+; Load table of abbreviations to allow input of Unicode characters.
+(set-register ?v "(load \"define-abbrev-table.el\")")
 
 (setq remove-blank-lines
  [?\C-[ ?r ?\C-q ?\C-j ?\C-q ?\C-j return ?\C-q ?\C-j return])
@@ -800,14 +775,14 @@ auto-mode-alist))
 (display-time-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)   ; Change yes/no prompts to y/n
 
-;; Zach Elliot's newer j-mode:
-;(load "j-mode")  ; Ex 210202
-;(autoload 'j-mode "j-mode.el""Major mode for J." t)
-;(autoload 'j-shell "j-mode.el" "Run J from emacs." t)
-(setq auto-mode-alist
-(cons '("\\.ij[rstp]" . j-mode) auto-mode-alist))
+;; Zach's newer j-mode:
+;(load "j-mode") ;ex 20210307
+;(autoload 'j-mode "j-mode.el""Major mode for J." t) ;ex 20210307
+;(autoload 'j-shell "j-mode.el" "Run J from emacs." t) ;ex 20210307
+;(setq auto-mode-alist ;ex 20210307
+;(cons '("\\.ij[rstp]" . j-mode) auto-mode-alist)) ;ex 20210307
 ;(setq j-path "C:\\Program Files (x86)\\J64-701\\")
-;(setq j-path (concat pgm-dir-home "J64-701\\"))  ; ex-20200517
+(setq j-path (concat pgm-dir-home "J64-902\\"))
 ;(which-func-mode 1) ; shows the current function in statusbar
 
 ; Grab current directory from prompt and change emacs dir to it.
@@ -864,18 +839,20 @@ auto-mode-alist))
    [?\C-c ?e ?\C-f ?\C-@ ?\C-x ?\] ?\M-w ?\C-x ?k return ?\C-x ?\[ ?\C-y ?\C-x ?\] ?\C-p ?\C-p ?\C-p ?\C-c ?g ?\C-f ?\C-a])
 
 ; load custom settings (faces)
-(setq custom-file (concat base-disk "/.emacs-custom.el"))
-(load custom-file)
+;(setq custom-file (concat base-disk "/.emacs-custom.el")) ;ex 20210307
+;(load custom-file) ;ex 20210307
 
 (setq ftp-program-name (concat base-disk "\\utl\\gnuwin32\\bin\\ftp.exe"))
+(setq ftp-default-user 'clarifi)
+(setq ftp-default-password '2o14!$upp0rT)
 
 ; R stuff:
 ; automatically get the correct mode
 auto-mode-alist (append (list '("\\.c$" . c-mode)
                               '("\\.emacs" . emacs-lisp-mode)
 			      '("\\.html$" . html-mode)
-;			      '("\\.ijs$" . j-mode)
-;			      '("\\.ijx$" . j-mode)
+			      '("\\.ijs$" . j-mode)
+			      '("\\.ijx$" . j-mode)
 			      '("\\.R$" . R-mode)
 			      '("\\.r$" . R-mode)
 			      '("\\.S$" . S-mode)
@@ -883,10 +860,10 @@ auto-mode-alist (append (list '("\\.c$" . c-mode)
 			      '("\\.tex$" . latex-mode)
 	                )
 		      auto-mode-alist)
-;(load (concat pgm-dir-home "Emacs\\site-lisp\\ess-12.09-2\\lisp\\ess-site"))
-;(setq-default inferior-R-program-name "\"C:\\Clarifi\\DCS\\res\\R\\R-2.12.2\\bin\\x64\\Rterm.exe\" --ess --vanilla")
-;(setq-default inferior-R-program-name (concat base-disk "/utl/R.bat"))
-;(load "forceUTF-8-coding")  ; From http://www.masteringemacs.org/article/working-coding-systems-unicode-emacs
+(load (concat EmacsBase "addons/ess-18.10.2/lisp/ess.el"))
+;c:/Users/devon/emacs26.3/addons/ess-18.10.2/lisp
+(setq-default inferior-R-program-name (concat base-disk "/utl/R.bat"))
+(load "forceUTF-8-coding")  ; From http://www.masteringemacs.org/article/working-coding-systems-unicode-emacs
 
 ;* fix-EOLS-in-text: replace single EOLs w/spaces but double ones w/single ones.
 (fset 'fix-EOLS-in-text
@@ -925,14 +902,14 @@ auto-mode-alist (append (list '("\\.c$" . c-mode)
 (turn-on-iimage-mode)
 (iimage-mode-buffer t)
 ; (ansi-term (concat base-disk "/Utl/MyCmd.bat"))
-;(setq auto-complete 1)
 
+;(setq auto-complete 1)
 (shell)
 ; Enable directory-tracking in shell: have to do this after starting shell.
 (load "baw-tracker.el")
 
-; Change to auxiliary disk: send command to shell just opened.
-(insert aux-disk)
+; Change to base disk: send command to shell just opened.
+(insert base-disk)
 (comint-send-input)
 ; Set emacs's base dir.
 (setq default-directory (concat base-disk "\\amisc\\"))
@@ -944,6 +921,7 @@ auto-mode-alist (append (list '("\\.c$" . c-mode)
 (comint-send-input)
 (insert "setprmpt")
 (comint-send-input)
+
 (put 'downcase-region 'disabled nil)
 
 (fset 'remove-EOLs-but-leave-paragraph-breaks
@@ -954,5 +932,10 @@ auto-mode-alist (append (list '("\\.c$" . c-mode)
 
 (fset 'replace-logfile-with-last-saved
    [?d ?e ?l ?  return ?r ?e ?n ?  ?\" ?# ?\C-y ?# ?\" ?  ?\C-y return])
-(fset 'rm-company-name-other-boilerplate
-   [?\C-s ?C ?o ?m ?p ?a ?n ?y ?  ?N ?a ?m ?e ?\C-f ?\C-b return ?\C-p ?\C-k ?\C-k ?\C-s ?c ?o ?m ?p ?a ?n ?y ?  ?l ?o ?c ?a ?t ?i ?o ?n ?\C-f return ?\C-p ?\C-s ?\C-s ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-k backspace ?\C-a ?\C-n ?\C-s ?p ?o ?s ?t ?e ?d ?  ?d ?a ?t ?e ?\C-f ?\C-b return ?\C-p ?\C-k ?\C-k ?\C-s ?n ?u ?m ?b ?e ?r ?  ?o ?f ?  ?v ?i ?e ?w ?s ?\C-b ?\C-f return ?\C-p ?\C-s ?\C-s ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-k backspace backspace])
+
+(fset 'rm-misc-company-etc-info
+   [?\C-s ?C ?o ?m ?p ?a ?n ?y ?  ?N ?a ?m ?e ?\C-f ?\C-b return ?\C-p ?\C-k ?\C-k ?\C-s ?C ?o ?m ?p ?a ?n ?y ?  ?L ?o ?c ?a ?t ?i ?o ?n ?\C-f return ?\C-p ?\C-s ?\C-s ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-k ?\C-n ?\C-a ?\C-s ?P ?o ?s ?t ?e ?d ?  ?D ?a ?t ?e ?\C-b ?\C-f return ?\C-p ?\C-k ?\C-k ?\C-s ?N ?u ?m ?b ?e ?r ?  ?o ?f ?  ?v ?i ?e ?w ?s ?\C-b ?\C-f return ?\C-p ?\C-s ?\C-s ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-b ?\C-k])
+(set-frame-size (selected-frame) 120 58)
+(set-frame-position (selected-frame) 140 10)
+   
+(desktop-save-mode 1)
